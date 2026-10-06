@@ -1,0 +1,19 @@
+1. Read Heavy (80%-20%)
+PGPASSWORD='benchmark' pgbench -h localhost -U benchmark -d isolation_benchmark \
+  -n \
+  -c 16 \
+  -j 4 \
+  -T 60 \
+  -f read_only.sql@80 \
+  -f transfer.sql@20
+  
+  
+2. Write Heavy
+PGPASSWORD='benchmark' pgbench -h localhost -U benchmark -d isolation_benchmark \
+  -n \
+  -c 128 \
+  -j 4 \
+  -T 60 \
+  -f read_only.sql@20 \
+  -f transfer.sql@80
+

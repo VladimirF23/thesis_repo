@@ -1,0 +1,24 @@
+
+
+2. 4-4
+Parametri -c 4 i -j 4 su naložili alatu da otvori četiri nezavisne konekcije i mapira ih na četiri niti, 
+čime je maksimalno iskorišten tvoj procesor sa četiri jezgra.
+TPS - Read Committed: 2954
+
+Vrijeme potrebno PostgreSQL-u da obradi jednu pojedinačnu transfer.sql transakciju zapravo se nije značajno smanjilo; 
+ono i dalje iznosi oko 3,5 milisekundi.
+
+Baza ne obrađuje pojedinačni upit brže, već zahvaljujući arhitekturi procesora i baze, sada obrađuje četiri potpuno nezavisna upita istovremeno.
+
+
+3. 8-4
+Sljedeći logičan korak je pokretanje testa sa -c 8 i -j 4.
+
+U poređenju sa prethodnim merenjem od 2954 TPS, ovaj skok jasno pokazuje efikasnije iskorišćenje sistemskih resursa. 
+Tvoj zaključak je apsolutno tačan: sistem obrađuje znatno više transakcija u sekundi upravo zbog povećane konkurentnosti.
+
+Pošto su parametri postavljeni na 8 klijenata i 4 niti (-c 8 -j 4), svaka nit na tvom operativnom sistemu sada naizmenično upravlja 
+sa dve konekcije ka bazi. Dok jedna konekcija čeka na upisivanje podataka na disk (I/O pauza), 
+procesor ne stoji besposlen, već trenutno prebacuje kontekst (context switching) i obrađuje upit sa druge konekcije. 
+Time se eliminiše prazan hod i maksimalno podiže propusnost (throughput), iako ne dolazi do stvarnog zagušenja na samim podacima
+
